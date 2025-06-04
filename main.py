@@ -7,18 +7,13 @@ import time
 pygame.init()
 
 # Constants
-FONT_SIZE = 16                  # Size of font
-FONT_PATH = "font.ttf"          # Path to font file
-TEXT_COLOR = (170, 170, 170)    # Text color
-BG_COLOR = (0, 0, 0)            # Background color
-WRAP_PREFIX = "  -"             # Prefix for wrapped lines
-
-# Initialize text content
-text_content = """
-Pyterm!
- 
-Example of a very ridiculously long line to make sure there is word wrap is here. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-"""
+FONT_SIZE = 16 # Size of font
+FONT_PATH = "font.ttf" # Path to font file
+TEXT_COLOR = (170, 170, 170) # Text color
+BG_COLOR = (0, 0, 0) # Background color
+WRAP_PREFIX = "   -" # Prefix for wrapped lines
+SHELL_PREFIX = "\n> " # Prefix for shell
+GOOD_KEYS = {pygame.K_SPACE} | set(range(pygame.K_a, pygame.K_z + 1)) # Not used right now but might be implemented later
 
 # Initialize the screen
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # Fullscreen mode
@@ -86,6 +81,14 @@ def main():
     holding_down = False
     
     pygame.mouse.set_visible(False)
+    
+    # Initialize text content
+    text_content = "Automatically logged in as (root)\n "
+    
+    text_content = text_content + SHELL_PREFIX
+    
+    shell_ready = True
+    shell_entered_text = ""
 
     while running:
         # Handle events
@@ -110,6 +113,14 @@ def main():
                         holding_up = False
                         scroll_offset += line_height
                         auto_scroll = False
+                elif event.key == pygame.K_BACKSPACE:
+                    text_content = text_content[0:-1]
+                elif event.key == pygame.K_RETURN:
+                    shell_entered_text = "temporary"
+                    text_content += SHELL_PREFIX
+                # elif event.key in GOOD_KEYS:
+                else:
+                    text_content += event.unicode
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
